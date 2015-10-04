@@ -50,17 +50,31 @@ public class WobblyView extends View implements View.OnTouchListener {
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.argb(255, 164, 199, 57));
+        paint.setColor(Color.argb(255, 0, 0, 0));
 
-        // radianをdegreeに変換して取得
-        float angle = (float)(Math.atan2(mMouseY - mPosY, mMouseX - mPosX) * (180.0 / Math.PI));
+        // Change radian to degree
+        float degree = (float)(Math.atan2(mMouseY - mPosY, mMouseX - mPosX) * (180.0 / Math.PI));
         canvas.translate(mPosX, mPosY);
-        canvas.rotate(angle);
+        canvas.rotate(degree);
 
+        float _width = mWidth > mRadius ? mRadius - (mWidth / mRadius) * 1.5f : mRadius;
+        if (_width < mRadius / 1.1f) {
+            _width = mRadius / 1.1f;
+        }
+
+        // Circle
         Path path = new Path();
-        RectF rectF = new RectF(-mRadius, -mRadius, mWidth, mRadius);
-
+        RectF rectF = new RectF(-_width, -_width, mRadius, _width);
         path.addArc(rectF, 0, 360);
+
+        // Stretchy part
+        Path wavePath = new Path();
+        float handleX = mWidth;
+        float startHandleY = -_width + _width / 1.3f;
+        float endHandleY = _width - _width / 1.3f;
+        wavePath.moveTo(0, -_width);
+        wavePath.cubicTo(handleX, startHandleY, handleX, endHandleY, 0, _width);
+        canvas.drawPath(wavePath, paint);
 
         canvas.drawPath(path, paint);
     }
